@@ -25,7 +25,8 @@ function updateTrafficLayer(hora) {
         display.style.fontWeight = "bold";
 
         // URL del Tile de tráfico de HERE (Flow layer)
-        const trafficUrl = `https://2.traffic.maps.ls.hereapi.com/maptile/2.1/traffictile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${i8vlAqNpKjA6X9tJfnAXYTL2IzUnPd8fM0lQwSyU1qI}`;
+       // Usamos el endpoint sin el subdominio numérico al inicio para evitar errores de resolución DNS
+        const trafficUrl = `https://traffic.maps.ls.hereapi.com/maptile/2.1/traffictile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${i8vlAqNpKjA6X9tJfnAXYTL2IzUnPd8fM0lQwSyU1qI}`;
         
         trafficLayer = L.tileLayer(trafficUrl, {
             maxZoom: 19,
