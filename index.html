@@ -6,7 +6,36 @@
     <title>Visor de Movilidad - Zapopan</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; }
+        #map { width: 100vw; height: 100vh; }
+        
+        /* Panel superior derecho (Capas) */
+        .leaflet-control-layers {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 8px !important;
+            padding: 10px !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
+        }
+    
+        /* Panel inferior (Slider) */
+        #time-slider-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 300px;
+        }
+        #time-slider-container label { display: block; font-weight: bold; margin-bottom: 10px; }
+        #timeSlider { width: 100%; cursor: pointer; }
+        #time-slider-container small { display: block; margin-top: 8px; color: #666; font-size: 12px; }
+    </style>
 </head>
 <body>
 
