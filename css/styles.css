@@ -1,26 +1,32 @@
-/* Reseteo básico */
-body, html {
-    margin: 0;
-    padding: 0;
+/* Estilos para el panel de tiempo flotante */
+#time-slider-container {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 25px;
+    border-radius: 8px;
+    z-index: 1000; /* Asegura que esté por encima del mapa */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 300px;
+}
+
+#time-slider-container label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#timeSlider {
     width: 100%;
-    height: 100%;
-    font-family: Arial, sans-serif;
+    cursor: pointer;
 }
 
-/* El mapa ocupa el 100% de la ventana */
-#map {
-    width: 100vw;
-    height: 100vh;
-}
-
-/* Estilo personalizado para el panel de control nativo de Leaflet */
-.leaflet-control-layers {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
-}
-
-.leaflet-control-layers-list {
-    font-size: 14px;
+#time-slider-container small {
+    display: block;
+    margin-top: 8px;
+    color: #666;
+    font-size: 12px;
 }
