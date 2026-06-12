@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor de Movilidad</title>
+    <title>Visor de Movilidad - Zapopan</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="css/styles.css">
@@ -12,10 +12,15 @@
 
     <div id="map"></div>
 
+    <div id="time-slider-container" class="leaflet-bar">
+        <label for="timeSlider">Hora de análisis: <span id="timeDisplay">12:00</span> hrs</label>
+        <input type="range" id="timeSlider" min="0" max="23" value="12" step="1">
+        <small>Desliza hasta las 18:00 para eventos masivos</small>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script src="js/map-init.js"></script>
     <script src="js/layers-control.js"></script>
-
-</body>
+    <script src="js/traffic-service.js"></script> </body>
 </html>
