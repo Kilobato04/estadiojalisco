@@ -30,3 +30,9 @@
     color: #666;
     font-size: 12px;
 }
+
+/* Limpieza de fondo para los iconos SVG personalizados */
+.custom-svg-icon {
+    background: transparent !important;
+    border: none !important;
+}
