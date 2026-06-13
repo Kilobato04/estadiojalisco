@@ -19,7 +19,8 @@ function updateTrafficLayer(hora) {
         display.style.fontWeight = "bold";
 
         // CORRECCIÓN: Usamos la variable HERE_API_KEY correctamente
-        const trafficUrl = `https://1.traffic.maps.ls.hereapi.com/maptile/2.1/traffictile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${HERE_API_KEY}`;
+        // URL de OpenMapTiles (Tráfico global, no requiere API Key ni registro)
+        const trafficUrl = `https://tiles.openfreemap.org/styles/positron/{z}/{x}/{y}.png`;
         
         trafficLayer = L.tileLayer(trafficUrl, {
             maxZoom: 19,
