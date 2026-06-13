@@ -19,23 +19,27 @@ function updateTrafficLayer(hora) {
         display.style.color = "red";
         display.style.fontWeight = "bold";
 
-        // URL de Tráfico de Google Maps (Solo para entorno de pruebas/desarrollo)
-        const trafficUrl = 'https://mt1.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}';
+        // ¡Regresamos a HERE!
+        const HERE_API_KEY = 'i8vlAqNpKjA6X9tJfnAXYTL2IzUnPd8fM0lQwSyU1qI';
+        
+        // Usamos {s} para que Leaflet alterne entre los servidores 1, 2, 3 y 4
+        const trafficUrl = `https://{s}.traffic.maps.ls.hereapi.com/maptile/2.1/traffictile/newest/normal.day/{z}/{x}/{y}/256/png8?apiKey=${HERE_API_KEY}`;
         
         trafficLayer = L.tileLayer(trafficUrl, {
+            subdomains: '1234', // Leaflet usará 1.traffic..., 2.traffic..., etc.
             maxZoom: 19,
-            opacity: 0.8, // Ligera transparencia para ver tus polígonos debajo
-            attribution: '© Google Traffic'
+            opacity: 0.8,
+            attribution: '© HERE Traffic'
         });
 
         trafficLayer.addTo(map);
-        layerControl.addOverlay(trafficLayer, "Tráfico (18:00)");
+        layerControl.addOverlay(trafficLayer, "Tráfico HERE (18:00)");
 
     } else {
         display.style.color = "black";
         display.style.fontWeight = "normal";
     }
-} // <-- ¡Aquí estaba la llave doble, ya la quité!
+}
 
 slider.addEventListener('input', function(e) {
     const horaSeleccionada = parseInt(e.target.value);
