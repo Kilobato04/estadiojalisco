@@ -9,7 +9,7 @@ const slider = document.getElementById('timeSlider');
 const display = document.getElementById('timeDisplay');
 
 function updateTrafficLayer(hora) {
-    // 1. Limpiar ambas capas si ya existen
+    // 1. Limpiar ambas capas del mapa y del panel si ya existen
     if (googleTrafficLayer) {
         map.removeLayer(googleTrafficLayer);
         try { layerControl.removeLayer(googleTrafficLayer); } catch(e) {}
@@ -24,9 +24,8 @@ function updateTrafficLayer(hora) {
         display.style.color = "red";
         display.style.fontWeight = "bold";
 
-        // --- CAPA 1: GOOGLE (Sin Etiquetas, solo flujo vehicular) ---
-        // Al quitar la 'h', desaparecen los nombres de Google y solo quedan las líneas
-        const googleUrl = 'https://mt1.google.com/vt/lyrs=traffic&x={x}&y={y}&z={z}';
+        // --- CAPA 1: GOOGLE (Restaurada con 'h' para que renderice) ---
+        const googleUrl = 'https://mt1.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}';
         googleTrafficLayer = L.tileLayer(googleUrl, {
             maxZoom: 19,
             opacity: 0.8,
@@ -34,7 +33,6 @@ function updateTrafficLayer(hora) {
         });
 
         // --- CAPA 2: HERE (Raster Tile API v3 - Endpoint Moderno) ---
-        // Esta es la URL oficial para cuentas nuevas. Adiós al error de red.
         const hereUrl = `https://traffic.maps.hereapi.com/v3/flow/mc/{z}/{x}/{y}/png?apiKey=${HERE_API_KEY}`;
         hereTrafficLayer = L.tileLayer(hereUrl, {
             maxZoom: 19,
@@ -42,16 +40,16 @@ function updateTrafficLayer(hora) {
             attribution: '© HERE Traffic'
         });
 
-        // 3. Comportamiento visual
-        // Añadimos Google al mapa por defecto, pero con la transparencia perfecta
+        // 3. Comportamiento visual por defecto
+        // Encendemos Google de inicio para asegurar el render
         googleTrafficLayer.addTo(map);
 
-        // Añadimos AMBAS al panel de la esquina superior derecha
-        layerControl.addOverlay(googleTrafficLayer, "Tráfico Google (Sin Etiquetas)");
-        layerControl.addOverlay(hereTrafficLayer, "Tráfico HERE (Congestión)");
+        // Añadimos AMBAS al control de capas para que puedas alternar y hacer el debug de HERE
+        layerControl.addOverlay(googleTrafficLayer, "Tráfico (Google)");
+        layerControl.addOverlay(hereTrafficLayer, "Tráfico Debug (HERE)");
 
     } else {
-        // Restablecer el estilo visual si no son las 18:00
+        // Restablecer el estilo si no es hora pico
         display.style.color = "black";
         display.style.fontWeight = "normal";
     }
