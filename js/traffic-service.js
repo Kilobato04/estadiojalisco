@@ -1,4 +1,4 @@
-// Configuración de HERE API
+// Configuración de HERE API (Comentada o ignorada por ahora)
 const HERE_API_KEY = 'i8vlAqNpKjA6X9tJfnAXYTL2IzUnPd8fM0lQwSyU1qI'; 
 
 // Capa base de tráfico vacía
@@ -35,7 +35,7 @@ function updateTrafficLayer(hora) {
         display.style.color = "black";
         display.style.fontWeight = "normal";
     }
-}}
+} // <-- ¡Aquí estaba la llave doble, ya la quité!
 
 slider.addEventListener('input', function(e) {
     const horaSeleccionada = parseInt(e.target.value);
