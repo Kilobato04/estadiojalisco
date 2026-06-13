@@ -33,16 +33,21 @@ async function loadGeoJsonData() {
                 return { color: "#888", weight: 2, fillOpacity: 0.5 };
             },
             
-            // Lógica para PUNTOS (ignorando mayúsculas)
+            // Lógica para PUNTOS (Sustituir el pin azul por SVG)
             pointToLayer: function (feature, latlng) {
                 let iconToUse = new L.Icon.Default(); 
-                const nombreGrupo = (feature.properties.Grupo || '').toLowerCase();
                 
-                if (nombreGrupo === 'mibici') {
+                // Extraemos el valor y lo pasamos a minúsculas
+                let valorGrupo = feature.properties.Grupo || '';
+                const nombreGrupoLimpiado = valorGrupo.trim().toLowerCase();
+                
+                // Agregamos 'bici pública' (con y sin acento por si acaso) a las condiciones
+                if (nombreGrupoLimpiado === 'bici pública' || nombreGrupoLimpiado === 'bici publica' || nombreGrupoLimpiado === 'mibici') {
                     iconToUse = iconMiBici;
-                } else if (nombreGrupo === 'intersecciones') {
+                } else if (nombreGrupoLimpiado === 'intersecciones' || nombreGrupoLimpiado === 'interseccion') {
                     iconToUse = iconInterseccion;
                 }
+                
                 return L.marker(latlng, { icon: iconToUse });
             },
 
