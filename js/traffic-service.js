@@ -8,35 +8,34 @@ const slider = document.getElementById('timeSlider');
 const display = document.getElementById('timeDisplay');
 
 function updateTrafficLayer(hora) {
+    // 1. Limpiar capa anterior
     if (trafficLayer) {
         map.removeLayer(trafficLayer);
-        // También removemos la capa del control superior si existe
         try { layerControl.removeLayer(trafficLayer); } catch(e) {}
     }
     
+    // 2. Lógica del Slider a las 18:00 hrs
     if (hora === 18) {
         display.style.color = "red";
         display.style.fontWeight = "bold";
 
-        // CORRECCIÓN: Usamos la variable HERE_API_KEY correctamente
-        // URL de OpenMapTiles (Tráfico global, no requiere API Key ni registro)
-        const trafficUrl = `https://tiles.openfreemap.org/styles/positron/{z}/{x}/{y}.png`;
+        // URL de Tráfico de Google Maps (Solo para entorno de pruebas/desarrollo)
+        const trafficUrl = 'https://mt1.google.com/vt/lyrs=h,traffic&x={x}&y={y}&z={z}';
         
         trafficLayer = L.tileLayer(trafficUrl, {
             maxZoom: 19,
-            attribution: '© HERE Traffic'
+            opacity: 0.8, // Ligera transparencia para ver tus polígonos debajo
+            attribution: '© Google Traffic'
         });
 
         trafficLayer.addTo(map);
-        
-        // Lo añadimos al control superior
-        layerControl.addOverlay(trafficLayer, "Tráfico (Hora Pico)");
+        layerControl.addOverlay(trafficLayer, "Tráfico (18:00)");
 
     } else {
         display.style.color = "black";
         display.style.fontWeight = "normal";
     }
-}
+}}
 
 slider.addEventListener('input', function(e) {
     const horaSeleccionada = parseInt(e.target.value);
