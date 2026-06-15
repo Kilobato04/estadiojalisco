@@ -10,7 +10,7 @@ const iconMiBici = L.divIcon({
     iconAnchor: [14, 14]
 });
 
-// 2. Icono Intersección (Cruz Negra sólida y visible)
+// 2. Icono Intersección (Cruz Negra sólida)
 const iconInterseccion = L.divIcon({
     className: 'custom-svg-icon',
     html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000000" width="22px" height="22px">
@@ -30,7 +30,7 @@ const iconTPEstacion = L.divIcon({
     iconAnchor: [14, 14]
 });
 
-// 4. Icono Puente Peatonal (Silueta de peatón estándar de cruce)
+// 4. Icono Puente Peatonal (Silueta de peatón cruzando)
 const iconPuentePeatonal = L.divIcon({
     className: 'custom-svg-icon',
     html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#8E44AD" width="28px" height="28px">
@@ -47,10 +47,16 @@ async function loadGeoJsonData() {
         const data = await response.json();
 
         L.geoJSON(data, {
-            // Estilos estables para Polígonos y Líneas
+            
+            // Filtro para excluir 'Demanda TP' por completo
+            filter: function(feature) {
+                const grupo = (feature.properties.Grupo || '').toLowerCase().trim();
+                return grupo !== 'demanda tp'; 
+            },
+
+            // Estilos para Polígonos y Líneas (Soporta "Recintos" y "Recinto")
             style: function(feature) {
                 const grupoPoligono = (feature.properties.Grupo || '').toLowerCase().trim();
-                // Validamos "recintos" para darles un estilo si son polígonos
                 if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') {
                     return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
                 }
@@ -63,7 +69,7 @@ async function loadGeoJsonData() {
                 return { color: "#888", weight: 2, fillOpacity: 0.5 };
             },
             
-            // Lógica para asignar los vectores SVG a los Puntos
+            // Asignación de vectores SVG para los Puntos
             pointToLayer: function (feature, latlng) {
                 let iconToUse = new L.Icon.Default(); 
                 let valorGrupo = feature.properties.Grupo || '';
@@ -82,36 +88,39 @@ async function loadGeoJsonData() {
                 return L.marker(latlng, { icon: iconToUse });
             },
 
-            // Estructura Dinámica de Popups y agrupación
+            // Estructura Dinámica y Flexible de Popups
             onEachFeature: function (feature, layer) {
                 const props = feature.properties;
                 const grupo = props.Grupo || 'Sin Grupo';
                 
-                // Construimos el HTML del popup inyectando solo los datos que existen
-                let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 150px;">`;
-                popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px;">${props.name || 'Elemento sin nombre'}</strong>`;
-                popupHTML += `<span style="color: #666; font-size: 13px;">Grupo: <b>${grupo}</b></span><br>`;
+                let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
+                popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 8px;">${props.name || 'Elemento sin nombre'}</strong>`;
+                popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Grupo: <span style="font-weight: bold; color: #555;">${grupo}</span></div>`;
                 
-                // Llaves condicionales para Recintos y TP
-                if (props.oferta !== undefined) {
-                    popupHTML += `<span style="font-size: 13px;">Oferta: <b>${props.oferta}</b></span><br>`;
+                // Renderizado condicional de métricas (viejas y nuevas)
+                if (props.Aforo !== undefined) {
+                    popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Aforo: <b>${props.Aforo.toLocaleString()}</b></div>`;
                 }
-                if (props.demanda !== undefined) {
-                    popupHTML += `<span style="font-size: 13px;">Demanda: <b>${props.demanda}</b></span><br>`;
+                if (props.Parking !== undefined) {
+                    popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Parking: <b>${props.Parking}</b></div>`;
                 }
                 if (props['Parking/Seat'] !== undefined) {
-                    popupHTML += `<span style="font-size: 13px;">Parking/Seat: <b>${props['Parking/Seat']}</b></span><br>`;
+                    popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Parking/Seat: <b>${props['Parking/Seat']}</b></div>`;
                 }
                 if (props['Parking Recinto'] !== undefined) {
-                    popupHTML += `<span style="font-size: 13px;">Parking Recinto: <b>${props['Parking Recinto']}</b></span><br>`;
+                    popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Parking Recinto: <b>${props['Parking Recinto']}</b></div>`;
+                }
+                if (props.oferta !== undefined) {
+                    popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Oferta: <b>${props.oferta}</b></div>`;
+                }
+                if (props.demanda !== undefined) {
+                    popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Demanda: <b>${props.demanda}</b></div>`;
                 }
                 
                 popupHTML += `</div>`;
-
-                // Asignamos el HTML formateado al globo del mapa
                 layer.bindPopup(popupHTML);
 
-                // Agrupamos en el menú
+                // Agrupación en el menú lateral tal como viene escrito el grupo
                 if (!layerGroups[grupo]) {
                     layerGroups[grupo] = L.layerGroup();
                 }
@@ -119,13 +128,12 @@ async function loadGeoJsonData() {
             }
         });
 
-        // Vincular los grupos al control unificado expuesto en window
+        // Vincular los grupos activos al menú superior derecho
         for (const [nombreGrupo, grupoLayer] of Object.entries(layerGroups)) {
             window.layerControl.addOverlay(grupoLayer, nombreGrupo);
             grupoLayer.addTo(map);
         }
 
-        // Inyección del botón limpio dentro del panel nativo
         agregarBotonMaestroAlPanel();
 
     } catch (error) {
@@ -133,7 +141,7 @@ async function loadGeoJsonData() {
     }
 }
 
-// Lógica de inyección en el DOM de Leaflet
+// Lógica de inyección del botón de control masivo (Sin Emojis)
 function agregarBotonMaestroAlPanel() {
     const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
     if (!overlaysContainer) return;
