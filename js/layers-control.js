@@ -30,6 +30,16 @@ const iconTPEstacion = L.divIcon({
     iconAnchor: [14, 14]
 });
 
+// 4. Nuevo Icono: Puente Peatonal (Morado con forma de paso elevado)
+const iconPuentePeatonal = L.divIcon({
+    className: 'custom-svg-icon',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#8E44AD" width="28px" height="28px">
+              <path d="M22,14v-4c0-4.42-3.58-8-8-8C9.58,2,6,5.58,6,10v4H4v6h4v-6h8v6h4v-6H22z M18,14H10v-4c0-2.21,1.79-4,4-4 s4,1.79,4,4V14z"/>
+           </svg>`,
+    iconSize: [28, 28], 
+    iconAnchor: [14, 14]
+});
+
 // Función principal para cargar y procesar el GeoJSON
 async function loadGeoJsonData() {
     try {
@@ -49,7 +59,7 @@ async function loadGeoJsonData() {
                 return { color: "#888", weight: 2, fillOpacity: 0.5 };
             },
             
-            // Lógica para asignar los nuevos vectores SVG a los Puntos
+            // Lógica para asignar los vectores SVG a los Puntos
             pointToLayer: function (feature, latlng) {
                 let iconToUse = new L.Icon.Default(); 
                 let valorGrupo = feature.properties.Grupo || '';
@@ -61,6 +71,9 @@ async function loadGeoJsonData() {
                     iconToUse = iconInterseccion;
                 } else if (nombreGrupoLimpiado === 'tp estación' || nombreGrupoLimpiado === 'tp estacion') {
                     iconToUse = iconTPEstacion;
+                } else if (nombreGrupoLimpiado === 'puente peatonal' || nombreGrupoLimpiado === 'puentes peatonales') {
+                    // Validamos la nueva llave del JSON para inyectar el puente
+                    iconToUse = iconPuentePeatonal;
                 }
                 
                 return L.marker(latlng, { icon: iconToUse });
@@ -92,7 +105,7 @@ async function loadGeoJsonData() {
     }
 }
 
-// Lógica de inyección en el DOM de Leaflet (Sin Emojis)
+// Lógica de inyección en el DOM de Leaflet
 function agregarBotonMaestroAlPanel() {
     const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
     if (!overlaysContainer) return;
@@ -100,7 +113,6 @@ function agregarBotonMaestroAlPanel() {
     const divBoton = document.createElement('div');
     divBoton.className = 'btn-maestro';
     
-    // Vectores SVG limpios para los estados abierto y cerrado
     const svgOjoCerrado = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
     const svgOjoAbierto = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
 
