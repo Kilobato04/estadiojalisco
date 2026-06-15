@@ -30,11 +30,11 @@ const iconTPEstacion = L.divIcon({
     iconAnchor: [14, 14]
 });
 
-// 4. Nuevo Icono: Puente Peatonal (Morado con forma de paso elevado)
+// 4. Icono Puente Peatonal (Silueta de peatón estándar de cruce)
 const iconPuentePeatonal = L.divIcon({
     className: 'custom-svg-icon',
     html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#8E44AD" width="28px" height="28px">
-              <path d="M22,14v-4c0-4.42-3.58-8-8-8C9.58,2,6,5.58,6,10v4H4v6h4v-6h8v6h4v-6H22z M18,14H10v-4c0-2.21,1.79-4,4-4 s4,1.79,4,4V14z"/>
+              <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
            </svg>`,
     iconSize: [28, 28], 
     iconAnchor: [14, 14]
@@ -50,6 +50,10 @@ async function loadGeoJsonData() {
             // Estilos estables para Polígonos y Líneas
             style: function(feature) {
                 const grupoPoligono = (feature.properties.Grupo || '').toLowerCase().trim();
+                // Validamos "recintos" para darles un estilo si son polígonos
+                if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') {
+                    return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
+                }
                 if (grupoPoligono === 'parking') {
                     return { color: "#3388ff", weight: 2, fillOpacity: 0.5 };
                 }
@@ -72,18 +76,42 @@ async function loadGeoJsonData() {
                 } else if (nombreGrupoLimpiado === 'tp estación' || nombreGrupoLimpiado === 'tp estacion') {
                     iconToUse = iconTPEstacion;
                 } else if (nombreGrupoLimpiado === 'puente peatonal' || nombreGrupoLimpiado === 'puentes peatonales') {
-                    // Validamos la nueva llave del JSON para inyectar el puente
                     iconToUse = iconPuentePeatonal;
                 }
                 
                 return L.marker(latlng, { icon: iconToUse });
             },
 
-            // Estructura de Popups y agrupación
+            // Estructura Dinámica de Popups y agrupación
             onEachFeature: function (feature, layer) {
-                const grupo = feature.properties.Grupo || 'Sin Grupo';
-                layer.bindPopup(`<b>${feature.properties.name || 'Elemento'}</b><br>Grupo: ${grupo}`);
+                const props = feature.properties;
+                const grupo = props.Grupo || 'Sin Grupo';
+                
+                // Construimos el HTML del popup inyectando solo los datos que existen
+                let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 150px;">`;
+                popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px;">${props.name || 'Elemento sin nombre'}</strong>`;
+                popupHTML += `<span style="color: #666; font-size: 13px;">Grupo: <b>${grupo}</b></span><br>`;
+                
+                // Llaves condicionales para Recintos y TP
+                if (props.oferta !== undefined) {
+                    popupHTML += `<span style="font-size: 13px;">Oferta: <b>${props.oferta}</b></span><br>`;
+                }
+                if (props.demanda !== undefined) {
+                    popupHTML += `<span style="font-size: 13px;">Demanda: <b>${props.demanda}</b></span><br>`;
+                }
+                if (props['Parking/Seat'] !== undefined) {
+                    popupHTML += `<span style="font-size: 13px;">Parking/Seat: <b>${props['Parking/Seat']}</b></span><br>`;
+                }
+                if (props['Parking Recinto'] !== undefined) {
+                    popupHTML += `<span style="font-size: 13px;">Parking Recinto: <b>${props['Parking Recinto']}</b></span><br>`;
+                }
+                
+                popupHTML += `</div>`;
 
+                // Asignamos el HTML formateado al globo del mapa
+                layer.bindPopup(popupHTML);
+
+                // Agrupamos en el menú
                 if (!layerGroups[grupo]) {
                     layerGroups[grupo] = L.layerGroup();
                 }
