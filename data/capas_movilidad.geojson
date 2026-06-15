@@ -3911,9 +3911,9 @@
             "properties": {
                 "name": "Auditorio Telmex",
                 "Grupo": "Recintos",
-                "oferta": 1,
-                "Parking/Seat": 1,
-                "Parking Recinto": 1,
+                "Aforo": 8,712,
+                "Parking Recinto": 3,500,
+                "Parking/Seat": 0.4,
                 "@id": "870f0770-64ea-11f1-bf78-dd176f6a3056"
             },
             "geometry": {
@@ -4200,9 +4200,9 @@
             "properties": {
                 "name": "Estadio Charros",
                 "Grupo": "Recintos",
-                "oferta": 1,
-                "Parking/Seat": 1,
-                "Parking Recinto": 1,
+                "Aforo": 16,500,
+                "Parking Recinto": CIS Zapopan,
+                "Parking/Seat": 0,
                 "@id": "03526660-64eb-11f1-bf78-dd176f6a3056"
             },
             "geometry": {
@@ -5127,9 +5127,9 @@
             "properties": {
                 "name": "Estadio Jalisco",
                 "Grupo": "Recintos",
-                "oferta": 1,
-                "Parking/Seat": 1,
-                "Parking Recinto": 1,
+                "Aforo": 56,713,
+                "Parking Recinto": 577,
+                "Parking/Seat": 0.01,
                 "@id": "cfe1feb0-64ec-11f1-bf78-dd176f6a3056"
             },
             "geometry": {
@@ -5382,9 +5382,9 @@
                 },
                 "name": "Plaza de Toros",
                 "Grupo": "Recintos",
-                "oferta": 1,
-                "Parking/Seat": 1,
-                "Parking Recinto": 1,
+                "Aforo": 16,500,
+                "Parking Recinto": 400,
+                "Parking/Seat": 0.02,
                 "@id": "2527ad20-64ed-11f1-bf78-dd176f6a3056"
             },
             "geometry": {
@@ -6219,7 +6219,9 @@
             "properties": {
                 "name": "Estadio Akron",
                 "Grupo": "Recintos",
-                "oferta": 1,
+                "Aforo": 46,355,
+                "Parking Recinto": 6,950,
+                "Parking/Seat": 0.15,
                 "@id": "c5a3f740-64ed-11f1-bf78-dd176f6a3056"
             },
             "geometry": {
@@ -10270,9 +10272,9 @@
             "properties": {
                 "name": "Expo GDL",
                 "Grupo": "Recintos",
-                "oferta": 1,
-                "Parking/Seat": 1,
-                "Parking Recinto": 1,
+                "Capacidad": ~50,000/día,
+                "Parking/Seat": Base distinta,
+                "Parking Recinto": 1,912 + Parking temporal,
                 "@id": "ba3b0490-6513-11f1-bf78-dd176f6a3056"
             },
             "geometry": {
@@ -11181,9 +11183,9 @@
             "properties": {
                 "name": "Nuevo Estadio",
                 "Grupo": "Recinto",
-                "oferta": 30244,
-                "Parking/Seat": 0,
-                "Parking Recinto": 0,
+                "Aforo": 30,244,
+                "Parking Recinto": 3,700 a 5,100,
+                "Parking/Seat": 0.13 a 0.15,
                 "@id": "96608ff0-68eb-11f1-bb4b-ab53942c9851"
             },
             "geometry": {
