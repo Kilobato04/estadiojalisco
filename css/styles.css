@@ -1,38 +1,45 @@
-/* Estilos para el panel de tiempo flotante */
-#time-slider-container {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    padding: 15px 25px;
-    border-radius: 8px;
-    z-index: 1000; /* Asegura que esté por encima del mapa */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    text-align: center;
-    width: 300px;
+/* Estilos base */
+body, html {
+    margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif;
+}
+#map {
+    width: 100vw; height: 100vh;
 }
 
-#time-slider-container label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 10px;
+/* Adaptación del panel de Leaflet para móviles */
+.leaflet-control-layers {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
 }
 
-#timeSlider {
-    width: 100%;
-    cursor: pointer;
-}
-
-#time-slider-container small {
-    display: block;
-    margin-top: 8px;
-    color: #666;
-    font-size: 12px;
+.leaflet-control-layers-expanded {
+    max-height: 80vh; /* Evita que el menú sea más alto que la pantalla del celular */
+    overflow-y: auto;
 }
 
 /* Limpieza de fondo para los iconos SVG personalizados */
 .custom-svg-icon {
     background: transparent !important;
     border: none !important;
+}
+
+/* Nuevo estilo para el botón de Ocultar/Mostrar (Sin Emojis) */
+.btn-maestro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #333;
+}
+.btn-maestro:hover {
+    background-color: #e2e6ea;
 }
