@@ -2,54 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visor de Movilidad - Zapopan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Visor de Movilidad - Estadio Jalisco</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: Arial, sans-serif; }
-        #map { width: 100vw; height: 100vh; }
-        
-        /* Panel superior derecho (Capas) */
-        .leaflet-control-layers {
-            background: rgba(255, 255, 255, 0.95) !important;
-            border-radius: 8px !important;
-            padding: 10px !important;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
-        }
-    
-        /* Panel inferior (Slider) */
-        #time-slider-container {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 25px;
-            border-radius: 8px;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            text-align: center;
-            width: 300px;
-        }
-        #time-slider-container label { display: block; font-weight: bold; margin-bottom: 10px; }
-        #timeSlider { width: 100%; cursor: pointer; }
-        #time-slider-container small { display: block; margin-top: 8px; color: #666; font-size: 12px; }
-    </style>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
     <div id="map"></div>
 
-    <div id="time-slider-container" class="leaflet-bar">
-        <label for="timeSlider">Hora de análisis: <span id="timeDisplay">12:00</span> hrs</label>
-        <input type="range" id="timeSlider" min="0" max="23" value="12" step="1">
-        <small>Desliza hasta las 18:00 para eventos masivos</small>
-    </div>
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
     <script src="js/map-init.js"></script>
     <script src="js/layers-control.js"></script>
-    <script src="js/traffic-service.js"></script> </body>
+
+</body>
 </html>
