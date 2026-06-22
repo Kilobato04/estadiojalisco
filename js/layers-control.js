@@ -67,9 +67,9 @@ async function loadGeoJsonData() {
                 if (grupoPoligono === 'transporte público' || grupoPoligono === 'transporte publico' || nombreFeature === 'ruta udg') {
                     return { color: "#9b59b6", weight: 5, opacity: 0.8 };
                 }
-                // 3. NUEVO: Estilo para la línea del puente peatonal propuesto (Morado segmentado)
+                // 3. NUEVO: Estilo para la línea del puente peatonal propuesto (Turquesa segmentado)
                 if (nombreFeature === 'puente peatonal ii constitución' || nombreFeature === 'puente peatonal ii constitucion') {
-                    return { color: "#8E44AD", weight: 4, dashArray: "5, 5", opacity: 0.9 };
+                    return { color: "#1ABC9C", weight: 5, dashArray: "5, 5", opacity: 0.9 };
                 }
 
                 if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
