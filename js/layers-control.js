@@ -147,6 +147,27 @@ async function loadGeoJsonData() {
                     layerGroups[nombreCapaDestino] = L.layerGroup();
                 }
                 layerGroups[nombreCapaDestino].addLayer(layer);
+                if (name === 'Ruta UdG' || name === 'ruta udg') {
+                    const flechasRuta = L.polylineDecorator(layer, {
+                        patterns: [
+                            {
+                                offset: '25',   // Empieza a dibujar después de 25px
+                                repeat: '120',  // Repite una flecha cada 120px de pantalla
+                                symbol: L.Symbol.arrowHead({
+                                    pixelSize: 14,       // Tamaño de la flecha
+                                    polygon: true,       // Flecha rellena (triángulo sólido)
+                                    pathOptions: { 
+                                        fillOpacity: 1, 
+                                        weight: 0, 
+                                        color: '#9b59b6' // Mismo color morado de la ruta
+                                    }
+                                })
+                            }
+                        ]
+                    });
+                    // Añadimos las flechas al MISMO grupo para que se apaguen/enciendan juntas
+                    layerGroups[nombreCapaDestino].addLayer(flechasRuta);
+                }
             }
         });
 
