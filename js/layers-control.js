@@ -64,20 +64,21 @@ async function loadGeoJsonData() {
                 const grupo = (feature.properties.Grupo || '').toLowerCase().trim();
                 return grupo !== 'demanda tp'; 
             },
+
             // Estilos para Polígonos y Líneas
             style: function(feature) {
                 const grupoPoligono = (feature.properties.Grupo || '').toLowerCase().trim();
                 const nombreFeature = (feature.properties.name || '').toLowerCase().trim();
 
-                // 1. Estilo para Nueva Vialidad
-                if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad') {
-                    return { color: "#2ecc71", weight: 4, dashArray: "6, 6", opacity: 0.9 };
+                // 1. AJUSTADO: Propuesta de Vialidad/Espacio Público en Gris Pizarra Oscuro (Evita confundirse con Tráfico Live)
+                if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad' || grupoPoligono === 'vialidad/espacio público' || grupoPoligono === 'vialidad/espacio publico') {
+                    return { color: "#34495E", weight: 4, dashArray: "6, 6", opacity: 0.95 };
                 }
                 // 2. Estilo para Ruta UdG
                 if (grupoPoligono === 'transporte público' || grupoPoligono === 'transporte publico' || nombreFeature === 'ruta udg') {
                     return { color: "#9b59b6", weight: 5, opacity: 0.8 };
                 }
-                // 3. NUEVO: Estilo para la línea del puente peatonal propuesto (Turquesa segmentado)
+                // 3. Estilo para la línea del puente peatonal propuesto (Turquesa segmentado)
                 if (nombreFeature === 'puente peatonal ii constitución' || nombreFeature === 'puente peatonal ii constitucion') {
                     return { color: "#1ABC9C", weight: 5, dashArray: "5, 5", opacity: 0.9 };
                 }
