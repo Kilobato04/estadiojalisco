@@ -43,6 +43,16 @@ const iconNEMiBici = L.divIcon({
     iconAnchor: [14, 14]
 });
 
+// 6. Nuevo Icono: Puente Peatonal Propuesto (Turquesa para combinar con su línea)
+const iconPuentePeatonalPropuesto = L.divIcon({
+    className: 'custom-svg-icon',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1ABC9C" width="28px" height="28px">
+              <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+           </svg>`,
+    iconSize: [28, 28], 
+    iconAnchor: [14, 14]
+});
+
 // Función principal
 async function loadGeoJsonData() {
     try {
@@ -77,6 +87,7 @@ async function loadGeoJsonData() {
                 if (grupoPoligono === 'tp estación' || grupoPoligono === 'tp estacion') return { color: "#ff7800", weight: 2, fillOpacity: 0.5 };
                 return { color: "#888", weight: 2, fillOpacity: 0.5 };
             },
+
             // Asignación de vectores SVG para los Puntos
             pointToLayer: function (feature, latlng) {
                 let iconToUse = new L.Icon.Default(); 
@@ -84,17 +95,22 @@ async function loadGeoJsonData() {
                 const nombreGrupoLimpiado = valorGrupo.trim().toLowerCase();
                 const nombreFeature = (feature.properties.name || '').trim().toLowerCase();
                 
-                // Prioridad: Si es la bici propuesta, usamos el azul
+                // Prioridad 1: Elementos específicos de propuestas
                 if (nombreFeature === 'ne mibici') {
-                    iconToUse = iconNEMiBici;
-                } else if (nombreGrupoLimpiado === 'bici pública' || nombreGrupoLimpiado === 'bici publica' || nombreGrupoLimpiado === 'mibici') {
-                    iconToUse = iconMiBici; // El rosa original
+                    iconToUse = iconNEMiBici; // Bici azul
+                } else if (nombreFeature === 'puente peatonal ii constitución' || nombreFeature === 'puente peatonal ii constitucion') {
+                    iconToUse = iconPuentePeatonalPropuesto; // Peatón turquesa
+                } 
+                
+                // Prioridad 2: Elementos generales por grupo
+                else if (nombreGrupoLimpiado === 'bici pública' || nombreGrupoLimpiado === 'bici publica' || nombreGrupoLimpiado === 'mibici') {
+                    iconToUse = iconMiBici; // Bici rosa
                 } else if (nombreGrupoLimpiado === 'intersecciones' || nombreGrupoLimpiado === 'interseccion') {
                     iconToUse = iconInterseccion;
                 } else if (nombreGrupoLimpiado === 'tp estación' || nombreGrupoLimpiado === 'tp estacion') {
                     iconToUse = iconTPEstacion;
                 } else if (nombreGrupoLimpiado === 'puente peatonal' || nombreGrupoLimpiado === 'puentes peatonales') {
-                    iconToUse = iconPuentePeatonal;
+                    iconToUse = iconPuentePeatonal; // Peatón morado (Puentes actuales)
                 }
                 
                 return L.marker(latlng, { icon: iconToUse });
