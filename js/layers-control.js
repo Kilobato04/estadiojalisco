@@ -54,21 +54,24 @@ async function loadGeoJsonData() {
                 const grupo = (feature.properties.Grupo || '').toLowerCase().trim();
                 return grupo !== 'demanda tp'; 
             },
-            // Estilos para Polígonos y Líneas (Soporta capas existentes y nuevas propuestas)
+            // Estilos para Polígonos y Líneas
             style: function(feature) {
                 const grupoPoligono = (feature.properties.Grupo || '').toLowerCase().trim();
                 const nombreFeature = (feature.properties.name || '').toLowerCase().trim();
 
-                // 1. Estilo para la propuesta de Nueva Vialidad (Línea verde segmentada)
+                // 1. Estilo para Nueva Vialidad
                 if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad') {
                     return { color: "#2ecc71", weight: 4, dashArray: "6, 6", opacity: 0.9 };
                 }
-                // 2. Estilo para la propuesta Ruta UdG (Línea morada sólida de transporte)
+                // 2. Estilo para Ruta UdG
                 if (grupoPoligono === 'transporte público' || grupoPoligono === 'transporte publico' || nombreFeature === 'ruta udg') {
-                    return { color: "#9b59b6", weight: 5, opacity: 0.8.h };
+                    return { color: "#9b59b6", weight: 5, opacity: 0.8 };
+                }
+                // 3. NUEVO: Estilo para la línea del puente peatonal propuesto (Morado segmentado)
+                if (nombreFeature === 'puente peatonal ii constitución' || nombreFeature === 'puente peatonal ii constitucion') {
+                    return { color: "#8E44AD", weight: 4, dashArray: "5, 5", opacity: 0.9 };
                 }
 
-                // --- Estilos anteriores preexistentes ---
                 if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
                 if (grupoPoligono === 'parking') return { color: "#3388ff", weight: 2, fillOpacity: 0.5 };
                 if (grupoPoligono === 'tp estación' || grupoPoligono === 'tp estacion') return { color: "#ff7800", weight: 2, fillOpacity: 0.5 };
@@ -103,10 +106,13 @@ async function loadGeoJsonData() {
                 
                 // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel usando su nombre
                 let nombreCapaDestino = grupo;
-                if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad') {
-                    // Si detecta la propuesta de calle, la renombra para el menú
-                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Andadores' : name; 
+                
+                // Agregamos el puente peatonal II a la lista de propuestas detectadas
+                if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'Puente Peatonal II Constitución') {
+                    
+                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Espacio Público' : name; 
                 }
+                
                 let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
                 popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 8px;">${props.name || 'Elemento sin nombre'}</strong>`;
                 popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Grupo: <span style="font-weight: bold; color: #555;">${grupo}</span></div>`;
@@ -204,11 +210,12 @@ function agregarSeparadorPropuestas() {
     const labels = overlaysContainer.querySelectorAll('label');
     let primerPropuestaLabel = null;
 
+
     // Localizamos cuál es la primera propuesta que aparece listada
     labels.forEach(label => {
         const texto = label.textContent.trim();
-        // Actualizado para buscar el nuevo nombre de la capa
-        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad/Andadores') {
+        // Agregamos el puente a la lista de validación del separador
+        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad/Espacio Público' || texto === 'Puente Peatonal II Constitución') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
     });
