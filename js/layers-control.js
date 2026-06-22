@@ -33,6 +33,16 @@ const iconPuentePeatonal = L.divIcon({
     iconSize: [28, 28], iconAnchor: [14, 14]
 });
 
+// 5. Nuevo Icono: NE MiBici (Azul vibrante para propuestas)
+const iconNEMiBici = L.divIcon({
+    className: 'custom-svg-icon',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#007bff" width="28px" height="28px">
+              <path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.6-1.6-.6s-1.1.2-1.4.6L7.8 8.4c-.4.4-.6 1-.6 1.5V13h2V10l1.8-1.5v3.3l-3.2 7.7h2.2l2.6-6.5h3v-2h-2.5l-2.3 2.5-1-2.5zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/>
+           </svg>`,
+    iconSize: [28, 28], 
+    iconAnchor: [14, 14]
+});
+
 // Función principal
 async function loadGeoJsonData() {
     try {
@@ -64,15 +74,25 @@ async function loadGeoJsonData() {
                 if (grupoPoligono === 'tp estación' || grupoPoligono === 'tp estacion') return { color: "#ff7800", weight: 2, fillOpacity: 0.5 };
                 return { color: "#888", weight: 2, fillOpacity: 0.5 };
             },
+            // Asignación de vectores SVG para los Puntos
             pointToLayer: function (feature, latlng) {
                 let iconToUse = new L.Icon.Default(); 
                 let valorGrupo = feature.properties.Grupo || '';
                 const nombreGrupoLimpiado = valorGrupo.trim().toLowerCase();
+                const nombreFeature = (feature.properties.name || '').trim().toLowerCase();
                 
-                if (nombreGrupoLimpiado === 'bici pública' || nombreGrupoLimpiado === 'bici publica' || nombreGrupoLimpiado === 'mibici') iconToUse = iconMiBici;
-                else if (nombreGrupoLimpiado === 'intersecciones' || nombreGrupoLimpiado === 'interseccion') iconToUse = iconInterseccion;
-                else if (nombreGrupoLimpiado === 'tp estación' || nombreGrupoLimpiado === 'tp estacion') iconToUse = iconTPEstacion;
-                else if (nombreGrupoLimpiado === 'puente peatonal' || nombreGrupoLimpiado === 'puentes peatonales') iconToUse = iconPuentePeatonal;
+                // Prioridad: Si es la bici propuesta, usamos el azul
+                if (nombreFeature === 'ne mibici') {
+                    iconToUse = iconNEMiBici;
+                } else if (nombreGrupoLimpiado === 'bici pública' || nombreGrupoLimpiado === 'bici publica' || nombreGrupoLimpiado === 'mibici') {
+                    iconToUse = iconMiBici; // El rosa original
+                } else if (nombreGrupoLimpiado === 'intersecciones' || nombreGrupoLimpiado === 'interseccion') {
+                    iconToUse = iconInterseccion;
+                } else if (nombreGrupoLimpiado === 'tp estación' || nombreGrupoLimpiado === 'tp estacion') {
+                    iconToUse = iconTPEstacion;
+                } else if (nombreGrupoLimpiado === 'puente peatonal' || nombreGrupoLimpiado === 'puentes peatonales') {
+                    iconToUse = iconPuentePeatonal;
+                }
                 
                 return L.marker(latlng, { icon: iconToUse });
             },
@@ -84,9 +104,9 @@ async function loadGeoJsonData() {
                 // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel usando su nombre
                 let nombreCapaDestino = grupo;
                 if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad') {
-                    nombreCapaDestino = name; 
+                    // Si detecta la propuesta de calle, la renombra para el menú
+                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Espacio Público' : name; 
                 }
-                
                 let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
                 popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 8px;">${props.name || 'Elemento sin nombre'}</strong>`;
                 popupHTML += `<div style="font-size: 13px; margin-bottom: 4px;">Grupo: <span style="font-weight: bold; color: #555;">${grupo}</span></div>`;
@@ -187,7 +207,8 @@ function agregarSeparadorPropuestas() {
     // Localizamos cuál es la primera propuesta que aparece listada
     labels.forEach(label => {
         const texto = label.textContent.trim();
-        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'NVialidad') {
+        // Actualizado para buscar el nuevo nombre de la capa
+        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad/Espacio Público') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
     });
