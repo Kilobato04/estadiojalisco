@@ -105,7 +105,7 @@ async function loadGeoJsonData() {
                 let nombreCapaDestino = grupo;
                 if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad') {
                     // Si detecta la propuesta de calle, la renombra para el menú
-                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Espacio Público' : name; 
+                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Andadores' : name; 
                 }
                 let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
                 popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 8px;">${props.name || 'Elemento sin nombre'}</strong>`;
@@ -208,7 +208,7 @@ function agregarSeparadorPropuestas() {
     labels.forEach(label => {
         const texto = label.textContent.trim();
         // Actualizado para buscar el nuevo nombre de la capa
-        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad/Espacio Público') {
+        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad/Andadores') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
     });
