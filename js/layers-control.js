@@ -115,17 +115,15 @@ async function loadGeoJsonData() {
                 
                 return L.marker(latlng, { icon: iconToUse });
             },
+            // Estructura Dinámica y Flexible de Popups
             onEachFeature: function (feature, layer) {
                 const props = feature.properties;
                 const grupo = props.Grupo || 'Sin Grupo';
                 const name = props.name || '';
                 
-                // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel usando su nombre
+                // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel
                 let nombreCapaDestino = grupo;
-                
-                // Agregamos el puente peatonal II a la lista de propuestas detectadas
-                if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'Puente Peatonal II Constitución') {
-                    
+                if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'Puente Peatonal II Constitución' || name === 'Puente Peatonal II Constitucion') {
                     nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Espacio Público' : name; 
                 }
                 
@@ -146,33 +144,7 @@ async function loadGeoJsonData() {
                 if (!layerGroups[nombreCapaDestino]) {
                     layerGroups[nombreCapaDestino] = L.layerGroup();
                 }
-                
-                // 2. NUEVO: Lógica de flechas para la Ruta UdG (Con validación antierrores)
-                if (name === 'Ruta UdG' || name === 'ruta udg') {
-                    // Verificamos que el plugin exista en memoria antes de intentar usarlo
-                    if (typeof L.polylineDecorator !== 'undefined' && L.Symbol) {
-                        const flechasRuta = L.polylineDecorator(layer, {
-                            patterns: [
-                                {
-                                    offset: '25',   
-                                    repeat: '120',  
-                                    symbol: L.Symbol.arrowHead({
-                                        pixelSize: 14,       
-                                        polygon: true,       
-                                        pathOptions: { 
-                                            fillOpacity: 1, 
-                                            weight: 0, 
-                                            color: '#9b59b6' 
-                                        }
-                                    })
-                                }
-                            ]
-                        });
-                        layerGroups[nombreCapaDestino].addLayer(flechasRuta);
-                    } else {
-                        console.warn("El plugin de flechas no cargó correctamente. Se dibujó solo la ruta base.");
-                    }
-                }
+                layerGroups[nombreCapaDestino].addLayer(layer);
             }
         });
 
