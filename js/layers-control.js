@@ -71,7 +71,8 @@ async function loadGeoJsonData() {
                 const nombreFeature = (feature.properties.name || '').toLowerCase().trim();
 
                 // 1. AJUSTADO: Propuesta de Vialidad/Espacio Público en Gris Pizarra Oscuro (Evita confundirse con Tráfico Live)
-                if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad' || grupoPoligono === 'vialidad/espacio público' || grupoPoligono === 'vialidad/espacio publico') {
+                // 1. Propuesta de Vialidad-Andador (Gris Pizarra Oscuro)
+                if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad' || grupoPoligono === 'vialidad-andador') {
                     return { color: "#34495E", weight: 4, dashArray: "6, 6", opacity: 0.95 };
                 }
                 // 2. Estilo para Ruta UdG
@@ -125,6 +126,7 @@ async function loadGeoJsonData() {
                 // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel
                 let nombreCapaDestino = grupo;
                 if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'Puente Peatonal II Constitución' || name === 'Puente Peatonal II Constitucion') {
+                    // Reemplazamos "Vialidad/Espacio Público" por "Vialidad-Andador"
                     nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad-Andador' : name; 
                 }
                 
@@ -229,7 +231,7 @@ function agregarSeparadorPropuestas() {
     // Localizamos cuál es la primera propuesta que aparece listada
     labels.forEach(label => {
         const texto = label.textContent.trim();
-        // Agregamos el puente a la lista de validación del separador
+        // Buscamos "Vialidad-Andador" en el menú
         if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad-Andador' || texto === 'Puente Peatonal II Constitución') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
