@@ -44,8 +44,21 @@ async function loadGeoJsonData() {
                 const grupo = (feature.properties.Grupo || '').toLowerCase().trim();
                 return grupo !== 'demanda tp'; 
             },
+            // Estilos para Polígonos y Líneas (Soporta capas existentes y nuevas propuestas)
             style: function(feature) {
                 const grupoPoligono = (feature.properties.Grupo || '').toLowerCase().trim();
+                const nombreFeature = (feature.properties.name || '').toLowerCase().trim();
+
+                // 1. Estilo para la propuesta de Nueva Vialidad (Línea verde segmentada)
+                if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad') {
+                    return { color: "#2ecc71", weight: 4, dashArray: "6, 6", opacity: 0.9 };
+                }
+                // 2. Estilo para la propuesta Ruta UdG (Línea morada sólida de transporte)
+                if (grupoPoligono === 'transporte público' || grupoPoligono === 'transporte publico' || nombreFeature === 'ruta udg') {
+                    return { color: "#9b59b6", weight: 5, opacity: 0.8.h };
+                }
+
+                // --- Estilos anteriores preexistentes ---
                 if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
                 if (grupoPoligono === 'parking') return { color: "#3388ff", weight: 2, fillOpacity: 0.5 };
                 if (grupoPoligono === 'tp estación' || grupoPoligono === 'tp estacion') return { color: "#ff7800", weight: 2, fillOpacity: 0.5 };
@@ -66,6 +79,13 @@ async function loadGeoJsonData() {
             onEachFeature: function (feature, layer) {
                 const props = feature.properties;
                 const grupo = props.Grupo || 'Sin Grupo';
+                const name = props.name || '';
+                
+                // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel usando su nombre
+                let nombreCapaDestino = grupo;
+                if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad') {
+                    nombreCapaDestino = name; 
+                }
                 
                 let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
                 popupHTML += `<strong style="font-size: 15px; display: block; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 8px;">${props.name || 'Elemento sin nombre'}</strong>`;
@@ -81,8 +101,10 @@ async function loadGeoJsonData() {
                 popupHTML += `</div>`;
                 layer.bindPopup(popupHTML);
 
-                if (!layerGroups[grupo]) layerGroups[grupo] = L.layerGroup();
-                layerGroups[grupo].addLayer(layer);
+                if (!layerGroups[nombreCapaDestino]) {
+                    layerGroups[nombreCapaDestino] = L.layerGroup();
+                }
+                layerGroups[nombreCapaDestino].addLayer(layer);
             }
         });
 
@@ -93,6 +115,7 @@ async function loadGeoJsonData() {
 
         agregarBotonMaestroAlPanel();
         agregarBotonEncuestaAlPanel(); // Ejecutamos la inyección del nuevo botón
+        agregarSeparadorPropuestas();
 
     } catch (error) {
         console.error("Error cargando el GeoJSON:", error);
@@ -150,6 +173,43 @@ function agregarBotonEncuestaAlPanel() {
 
     // appendChild lo empuja automáticamente al final del menú de capas
     overlaysContainer.appendChild(divBoton);
+}
+
+// NUEVO: Crea una división visual para las propuestas dentro del contenedor nativo
+function agregarSeparadorPropuestas() {
+    const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
+    if (!overlaysContainer) return;
+
+    // Buscamos todas las etiquetas de las capas añadidas
+    const labels = overlaysContainer.querySelectorAll('label');
+    let primerPropuestaLabel = null;
+
+    // Localizamos cuál es la primera propuesta que aparece listada
+    labels.forEach(label => {
+        const texto = label.textContent.trim();
+        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'NVialidad') {
+            if (!primerPropuestaLabel) primerPropuestaLabel = label;
+        }
+    });
+
+    // Si encontramos una propuesta y el separador no existe ya, lo inyectamos justo antes
+    if (primerPropuestaLabel && !document.querySelector('.separador-propuestas')) {
+        const divSeparador = document.createElement('div');
+        divSeparador.className = 'separador-propuestas';
+        Object.assign(divSeparador.style, {
+            fontWeight: 'bold',
+            margin: '14px 0 6px 0',
+            paddingTop: '8px',
+            borderTop: '1px solid #ddd',
+            fontSize: '11px',
+            color: '#666',
+            letterSpacing: '1px',
+            paddingLeft: '4px'
+        });
+        divSeparador.innerHTML = 'PROPUESTAS';
+        
+        overlaysContainer.insertBefore(divSeparador, primerPropuestaLabel);
+    }
 }
 
 // NUEVO: Lógica del Modal (Ventana emergente)
@@ -214,5 +274,6 @@ function abrirModalEncuesta() {
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
 }
+
 
 loadGeoJsonData();
