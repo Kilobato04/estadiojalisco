@@ -125,7 +125,7 @@ async function loadGeoJsonData() {
                 // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel
                 let nombreCapaDestino = grupo;
                 if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'Puente Peatonal II Constitución' || name === 'Puente Peatonal II Constitucion') {
-                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad/Espacio Público' : name; 
+                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad-Andador' : name; 
                 }
                 
                 let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
@@ -230,7 +230,7 @@ function agregarSeparadorPropuestas() {
     labels.forEach(label => {
         const texto = label.textContent.trim();
         // Agregamos el puente a la lista de validación del separador
-        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad/Espacio Público' || texto === 'Puente Peatonal II Constitución') {
+        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad-Andador' || texto === 'Puente Peatonal II Constitución') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
     });
