@@ -70,20 +70,30 @@ async function loadGeoJsonData() {
                 const grupoPoligono = (feature.properties.Grupo || '').toLowerCase().trim();
                 const nombreFeature = (feature.properties.name || '').toLowerCase().trim();
 
-                // 1. AJUSTADO: Propuesta de Vialidad/Espacio Público en Gris Pizarra Oscuro (Evita confundirse con Tráfico Live)
-                // 1. Propuesta de Vialidad-Andador (Gris Pizarra Oscuro)
+                // 1. Propuesta de Vialidad-Andador (Gris Pizarra - Fase 1)
                 if (grupoPoligono === 'pcalles/ep' || nombreFeature === 'nvialidad' || grupoPoligono === 'vialidad-andador') {
                     return { color: "#34495E", weight: 4, dashArray: "6, 6", opacity: 0.95 };
                 }
-                // 2. Estilo para Ruta UdG
+                // NUEVO: Vialidad F2 (Marrón Terracota - Fase 2)
+                if (nombreFeature === 'nvialidad f2') {
+                    return { color: "#A04000", weight: 4, dashArray: "4, 8", opacity: 0.9 };
+                }
+
+                // 2. Estilo para Ruta UdG (Morado - Ruta 1)
                 if (grupoPoligono === 'transporte público' || grupoPoligono === 'transporte publico' || nombreFeature === 'ruta udg') {
                     return { color: "#9b59b6", weight: 5, opacity: 0.8 };
                 }
-                // 3. Estilo para la línea del puente peatonal propuesto (Turquesa segmentado)
+                // NUEVO: Estilo para Ruta UdG II (Azul Cobalto - Ruta 2)
+                if (nombreFeature === 'ruta udg ii') {
+                    return { color: "#2980B9", weight: 5, opacity: 0.8 };
+                }
+
+                // 3. Estilo para el puente peatonal propuesto (Turquesa segmentado)
                 if (nombreFeature === 'puente peatonal ii constitución' || nombreFeature === 'puente peatonal ii constitucion') {
                     return { color: "#1ABC9C", weight: 5, dashArray: "5, 5", opacity: 0.9 };
                 }
 
+                // --- Capas Base ---
                 if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
                 if (grupoPoligono === 'parking') return { color: "#3388ff", weight: 2, fillOpacity: 0.5 };
                 if (grupoPoligono === 'tp estación' || grupoPoligono === 'tp estacion') return { color: "#ff7800", weight: 2, fillOpacity: 0.5 };
@@ -125,9 +135,17 @@ async function loadGeoJsonData() {
                 
                 // CONDICIÓN: Si es propuesta, se registra de forma independiente en el panel
                 let nombreCapaDestino = grupo;
-                if (name === 'NE MiBici' || name === 'Ruta UdG' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'Puente Peatonal II Constitución' || name === 'Puente Peatonal II Constitucion') {
-                    // Reemplazamos "Vialidad/Espacio Público" por "Vialidad-Andador"
-                    nombreCapaDestino = (name === 'NVialidad' || grupo === 'PCalles/EP') ? 'Vialidad-Andador' : name; 
+                
+                if (name === 'NE MiBici' || name === 'Ruta UdG' || name === 'Ruta UdG II' || grupo === 'PCalles/EP' || name === 'NVialidad' || name === 'NVialidad F2' || name === 'Puente Peatonal II Constitución' || name === 'Puente Peatonal II Constitucion') {
+                    
+                    // Renombramiento dinámico para el panel de capas
+                    if (name === 'NVialidad' || grupo === 'PCalles/EP') {
+                        nombreCapaDestino = 'Vialidad-Andador';
+                    } else if (name === 'NVialidad F2') {
+                        nombreCapaDestino = 'Vialidad-Andador Fase 2';
+                    } else {
+                        nombreCapaDestino = name; // Mantiene "Ruta UdG II", etc.
+                    }
                 }
                 
                 let popupHTML = `<div style="font-family: Arial, sans-serif; min-width: 160px;">`;
@@ -227,12 +245,11 @@ function agregarSeparadorPropuestas() {
     const labels = overlaysContainer.querySelectorAll('label');
     let primerPropuestaLabel = null;
 
-
     // Localizamos cuál es la primera propuesta que aparece listada
     labels.forEach(label => {
         const texto = label.textContent.trim();
-        // Buscamos "Vialidad-Andador" en el menú
-        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Vialidad-Andador' || texto === 'Puente Peatonal II Constitución') {
+        // Agregamos "Ruta UdG II" y "Vialidad-Andador Fase 2" al detector
+        if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Ruta UdG II' || texto === 'Vialidad-Andador' || texto === 'Vialidad-Andador Fase 2' || texto === 'Puente Peatonal II Constitución') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
     });
