@@ -95,14 +95,14 @@ async function loadGeoJsonData() {
 
                 // --- NUEVAS CAPAS: Accesos al Estadio ---
                 if (nombreFeature === 'entrada-estadio') {
-                    return { color: "#2ecc71", weight: 6, opacity: 0.9 }; // Verde
+                    return { color: "#3498db", weight: 6, opacity: 0.9 }; // Azul (Entradas)
                 }
                 if (nombreFeature === 'salida-estadio') {
-                    return { color: "#3498db", weight: 6, opacity: 0.9 }; // Azul
+                    return { color: "#e74c3c", weight: 6, opacity: 0.9 }; // Rojo (Salidas)
                 }
                 if (nombreFeature === 'entrada/salida-estadio') {
-                    // Para la bidireccional, esta es la capa BASE (Rojo sólido). 
-                    // La capa punteada azul se añadirá en el onEachFeature.
+                    // Capa BASE para la bidireccional (Rojo sólido). 
+                    // El onEachFeature que ya pusiste le pondrá los puntos azules encima.
                     return { color: "#e74c3c", weight: 6, opacity: 0.9 }; 
                 }
 
