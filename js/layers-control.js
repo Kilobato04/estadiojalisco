@@ -93,6 +93,19 @@ async function loadGeoJsonData() {
                     return { color: "#1ABC9C", weight: 5, dashArray: "5, 5", opacity: 0.9 };
                 }
 
+                // --- NUEVAS CAPAS: Accesos al Estadio ---
+                if (nombreFeature === 'entrada-estadio') {
+                    return { color: "#2ecc71", weight: 6, opacity: 0.9 }; // Verde
+                }
+                if (nombreFeature === 'salida-estadio') {
+                    return { color: "#3498db", weight: 6, opacity: 0.9 }; // Azul
+                }
+                if (nombreFeature === 'entrada/salida-estadio') {
+                    // Para la bidireccional, esta es la capa BASE (Rojo sólido). 
+                    // La capa punteada azul se añadirá en el onEachFeature.
+                    return { color: "#e74c3c", weight: 6, opacity: 0.9 }; 
+                }
+
                 // --- Capas Base ---
                 if (grupoPoligono === 'recintos' || grupoPoligono === 'recinto') return { color: "#e74c3c", weight: 2, fillOpacity: 0.5 }; 
                 if (grupoPoligono === 'parking') return { color: "#3388ff", weight: 2, fillOpacity: 0.5 };
@@ -165,7 +178,27 @@ async function loadGeoJsonData() {
                 if (!layerGroups[nombreCapaDestino]) {
                     layerGroups[nombreCapaDestino] = L.layerGroup();
                 }
+                
+                // 1. Agregamos la línea normal (que para la bidireccional será roja sólida)
                 layerGroups[nombreCapaDestino].addLayer(layer);
+
+                // 2. TRUCO BICOLOR: Si es Entrada/Salida, creamos una segunda capa punteada encima
+                const nombreParaBicolor = (feature.properties.name || '').toLowerCase().trim();
+                
+                if (nombreParaBicolor === 'entrada/salida-estadio' && layer.getLatLngs) {
+                    const lineaPunteada = L.polyline(layer.getLatLngs(), {
+                        color: "#3498db",     // Azul
+                        weight: 6,            
+                        dashArray: "12, 12",  // Patrón de guiones
+                        opacity: 1
+                    });
+                    
+                    // Le pegamos el mismo Popup para que reaccione igual al clic
+                    lineaPunteada.bindPopup(popupHTML); 
+                    
+                    // La agregamos al mismo grupo para que se apaguen/prendan juntas
+                    layerGroups[nombreCapaDestino].addLayer(lineaPunteada);
+                }
             }
         });
 
