@@ -174,147 +174,169 @@ async function loadGeoJsonData() {
             grupoLayer.addTo(map);
         }
 
+// Llamadas de interfaz al final de loadGeoJsonData()
         agregarBotonMaestroAlPanel();
-        agregarBotonEncuestaAlPanel(); // Ejecutamos la inyección del nuevo botón
         agregarSeparadorPropuestas();
+        agregarBotonEncuestaAlPanel(); 
+        
+        // --- NUEVAS LLAMADAS ---
+        agregarSeparadorLiveData(); 
+        agregarBotonesLiveData();
 
     } catch (error) {
         console.error("Error cargando el GeoJSON:", error);
     }
 }
 
-// Botón Ocultar/Mostrar Capas (Arriba)
+// ----------------------------------------------------
+// BOTONES Y SEPARADORES EXISTENTES
+// ----------------------------------------------------
 function agregarBotonMaestroAlPanel() {
     const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
     if (!overlaysContainer) return;
-
     const divBoton = document.createElement('div');
     divBoton.className = 'btn-maestro';
-    
     const svgOjoCerrado = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
     const svgOjoAbierto = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
-
     divBoton.innerHTML = `${svgOjoCerrado} Ocultar Capas`;
-
     let todasOcultas = false;
-
     divBoton.onclick = function(e) {
         e.stopPropagation(); 
         todasOcultas = !todasOcultas;
         divBoton.innerHTML = todasOcultas ? `${svgOjoAbierto} Mostrar Capas` : `${svgOjoCerrado} Ocultar Capas`;
-
         const checkboxes = overlaysContainer.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(cb => {
             if ((cb.checked && todasOcultas) || (!cb.checked && !todasOcultas)) cb.click();
         });
     };
-
     overlaysContainer.insertBefore(divBoton, overlaysContainer.firstChild);
 }
 
-// NUEVO: Botón Encuesta OD (Abajo)
-function agregarBotonEncuestaAlPanel() {
-    const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
-    if (!overlaysContainer) return;
-
-    const divBoton = document.createElement('div');
-    // Reutilizamos tu clase CSS para que se vea igual de profesional
-    divBoton.className = 'btn-maestro'; 
-    divBoton.style.marginTop = '15px'; // Separación visual de las capas
-    
-    // SVG de Encuesta/Estadísticas
-    const svgEncuesta = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
-    
-    divBoton.innerHTML = `${svgEncuesta} Encuesta OD 2023`;
-
-    divBoton.onclick = function(e) {
-        e.stopPropagation(); // Evita que el menú de capas se cierre al dar clic
-        abrirModalEncuesta();
-    };
-
-    // appendChild lo empuja automáticamente al final del menú de capas
-    overlaysContainer.appendChild(divBoton);
-}
-
-// NUEVO: Crea una división visual para las propuestas dentro del contenedor nativo
 function agregarSeparadorPropuestas() {
     const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
     if (!overlaysContainer) return;
-
-    // Buscamos todas las etiquetas de las capas añadidas
     const labels = overlaysContainer.querySelectorAll('label');
     let primerPropuestaLabel = null;
-
-    // Localizamos cuál es la primera propuesta que aparece listada
     labels.forEach(label => {
         const texto = label.textContent.trim();
-        // Agregamos "Ruta UdG II" y "Vialidad-Andador Fase 2" al detector
         if (texto === 'NE MiBici' || texto === 'Ruta UdG' || texto === 'Ruta UdG II' || texto === 'Vialidad-Andador' || texto === 'Vialidad-Andador Fase 2' || texto === 'Puente Peatonal II Constitución') {
             if (!primerPropuestaLabel) primerPropuestaLabel = label;
         }
     });
-
-    // Si encontramos una propuesta y el separador no existe ya, lo inyectamos justo antes
     if (primerPropuestaLabel && !document.querySelector('.separador-propuestas')) {
         const divSeparador = document.createElement('div');
         divSeparador.className = 'separador-propuestas';
         Object.assign(divSeparador.style, {
-            fontWeight: 'bold',
-            margin: '14px 0 6px 0',
-            paddingTop: '8px',
-            borderTop: '1px solid #ddd',
-            fontSize: '11px',
-            color: '#666',
-            letterSpacing: '1px',
-            paddingLeft: '4px'
+            fontWeight: 'bold', margin: '14px 0 6px 0', paddingTop: '8px', borderTop: '1px solid #ddd',
+            fontSize: '11px', color: '#666', letterSpacing: '1px', paddingLeft: '4px'
         });
         divSeparador.innerHTML = 'PROPUESTAS';
-        
         overlaysContainer.insertBefore(divSeparador, primerPropuestaLabel);
     }
 }
 
-// NUEVO: Lógica del Modal (Ventana emergente)
-function abrirModalEncuesta() {
-    if (document.getElementById('modal-encuesta')) return;
+function agregarBotonEncuestaAlPanel() {
+    const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
+    if (!overlaysContainer) return;
+    const divBoton = document.createElement('div');
+    divBoton.className = 'btn-maestro'; 
+    divBoton.style.marginTop = '15px'; 
+    const svgEncuesta = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`;
+    divBoton.innerHTML = `${svgEncuesta} Encuesta OD 2023`;
+    divBoton.onclick = function(e) {
+        e.stopPropagation(); 
+        // Usamos la nueva función universal de modales
+        abrirModalIframe('https://www.imeplan.mx/plataformas-de-informacion/visualizador-eod', 'Encuesta Origen Destino 2023');
+    };
+    overlaysContainer.appendChild(divBoton);
+}
+
+// ----------------------------------------------------
+// NUEVA SECCIÓN: LIVE DATA Y SUS BOTONES
+// ----------------------------------------------------
+function agregarSeparadorLiveData() {
+    const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
+    if (!overlaysContainer) return;
+    
+    const divSeparador = document.createElement('div');
+    Object.assign(divSeparador.style, {
+        fontWeight: 'bold', margin: '14px 0 6px 0', paddingTop: '8px', borderTop: '1px solid #ddd',
+        fontSize: '11px', color: '#666', letterSpacing: '1px', paddingLeft: '4px'
+    });
+    divSeparador.innerHTML = 'LIVE DATA (HERE API)';
+    overlaysContainer.appendChild(divSeparador);
+}
+
+function agregarBotonesLiveData() {
+    const overlaysContainer = document.querySelector('.leaflet-control-layers-overlays');
+    if (!overlaysContainer) return;
+
+    // Botón Velocidad Media
+    const btnVel = document.createElement('div');
+    btnVel.className = 'btn-maestro';
+    btnVel.style.marginTop = '6px';
+    btnVel.innerHTML = `🟢 Velocidad Media`;
+    btnVel.onclick = function(e) {
+        e.stopPropagation();
+        abrirModalIframe('Mapa_Velocidad.html', 'Velocidad Media Operativa');
+    };
+    overlaysContainer.appendChild(btnVel);
+
+    // Botón Jam Factor
+    const btnJam = document.createElement('div');
+    btnJam.className = 'btn-maestro';
+    btnJam.style.marginTop = '6px';
+    btnJam.innerHTML = `🔴 Jam Factor (Congestión)`;
+    btnJam.onclick = function(e) {
+        e.stopPropagation();
+        abrirModalIframe('Mapa_JamFactor.html', 'Índice de Congestión (Jam Factor)');
+    };
+    overlaysContainer.appendChild(btnJam);
+}
+
+// ----------------------------------------------------
+// MODAL UNIVERSAL REFACTORIZADO (Sirve para la Encuesta y los Mapas)
+// ----------------------------------------------------
+function abrirModalIframe(url, titulo) {
+    if (document.getElementById('modal-iframe')) return;
 
     const modal = document.createElement('div');
-    modal.id = 'modal-encuesta';
+    modal.id = 'modal-iframe';
     Object.assign(modal.style, {
-        position: 'fixed',
-        top: '0', left: '0', width: '100vw', height: '100vh',
-        backgroundColor: 'rgba(0,0,0,0.85)', // Fondo oscuro transparente
-        zIndex: '99999',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center'
+        position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+        backgroundColor: 'rgba(0,0,0,0.85)', zIndex: '99999',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
     });
 
     const modalContent = document.createElement('div');
     Object.assign(modalContent.style, {
-        width: '95%', height: '90%', maxWidth: '1200px',
-        backgroundColor: '#fff',
-        borderRadius: '8px',
-        display: 'flex', flexDirection: 'column',
-        overflow: 'hidden',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+        width: '95%', height: '90%', maxWidth: '1200px', backgroundColor: '#fff',
+        borderRadius: '8px', display: 'flex', flexDirection: 'column',
+        overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
     });
 
     const header = document.createElement('div');
     Object.assign(header.style, {
-        padding: '12px 20px', backgroundColor: '#f1f3f5',
-        borderBottom: '1px solid #ddd',
+        padding: '12px 20px', backgroundColor: '#f1f3f5', borderBottom: '1px solid #ddd',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
     });
 
-    const urlEncuesta = 'https://www.imeplan.mx/plataformas-de-informacion/visualizador-eod';
-
+    const titleContainer = document.createElement('div');
+    
+    const titleEl = document.createElement('strong');
+    titleEl.innerHTML = titulo;
+    titleEl.style.fontSize = '16px';
+    
     const linkExterno = document.createElement('a');
-    linkExterno.href = urlEncuesta;
+    linkExterno.href = url;
     linkExterno.target = '_blank';
-    linkExterno.innerHTML = '🔗 Abrir en ventana diferente';
+    linkExterno.innerHTML = '🔗 Abrir en pestaña nueva';
     Object.assign(linkExterno.style, {
-        textDecoration: 'none', color: '#004aad', fontWeight: 'bold', fontSize: '14px'
+        textDecoration: 'none', color: '#004aad', fontWeight: 'bold', fontSize: '13px', marginLeft: '15px'
     });
+
+    titleContainer.appendChild(titleEl);
+    titleContainer.appendChild(linkExterno);
 
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '✖';
@@ -324,12 +346,12 @@ function abrirModalEncuesta() {
     closeBtn.onclick = () => document.body.removeChild(modal);
 
     const iframe = document.createElement('iframe');
-    iframe.src = urlEncuesta;
+    iframe.src = url;
     Object.assign(iframe.style, {
         width: '100%', height: '100%', border: 'none', flexGrow: '1'
     });
 
-    header.appendChild(linkExterno);
+    header.appendChild(titleContainer);
     header.appendChild(closeBtn);
     modalContent.appendChild(header);
     modalContent.appendChild(iframe);
@@ -337,5 +359,5 @@ function abrirModalEncuesta() {
     document.body.appendChild(modal);
 }
 
-
+// Inicializar la carga de datos
 loadGeoJsonData();
